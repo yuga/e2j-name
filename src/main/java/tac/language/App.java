@@ -31,24 +31,31 @@ public class App {
         } catch (SecurityException | IOException e) {
             e.printStackTrace();
         }
+
+        String string = convert(args[0]);
+        System.out.println(string);
+    }
+
+    public static String convert(String s) {
         App app = new App();
         app.loadDictionary();
-
-        String string = Stream.of(args[0].split("[ ]+"))
-                .map(w -> {
-                    List<String> word = app.getWord(w);
-                    String[] array = word.toArray(new String[word.size()]);
-                    System.out.println(Arrays.toString(array));
-                    CMU2KatakanaLexer lexer = new CMU2KatakanaLexer(
-                            new ANTLRInputStream(Stream.of(array).collect(Collectors.joining(" "))));
-                    CommonTokenStream token = new CommonTokenStream(lexer);
-                    CMU2KatakanaParser parser = new CMU2KatakanaParser(token);
-                    ConvertKatakanaContext context = parser.convertKatakana();
-                    return context.result;
-                })
-                .collect(Collectors.joining(" "));
-        System.out.println(string);
-        app.close();
+        try {
+            return Stream.of(s.split("[ ]+"))
+                    .map(w -> {
+                        List<String> word = app.getWord(w);
+                        String[] array = word.toArray(new String[word.size()]);
+                        System.out.println(Arrays.toString(array));
+                        CMU2KatakanaLexer lexer = new CMU2KatakanaLexer(
+                                new ANTLRInputStream(Stream.of(array).collect(Collectors.joining(" "))));
+                        CommonTokenStream token = new CommonTokenStream(lexer);
+                        CMU2KatakanaParser parser = new CMU2KatakanaParser(token);
+                        ConvertKatakanaContext context = parser.convertKatakana();
+                        return context.result;
+                    })
+                    .collect(Collectors.joining(" "));
+        } finally {
+            app.close();
+        }
     }
 
     public List<String> getWord(String text) {
