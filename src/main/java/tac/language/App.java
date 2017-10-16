@@ -32,11 +32,15 @@ public class App {
             e.printStackTrace();
         }
 
-        String string = convert(args[0]);
+        String string = convert(args[0], true);
         System.out.println(string);
     }
 
     public static String convert(String s) {
+        return convert(s, false);
+    }
+
+    public static String convert(String s, boolean verbose) {
         App app = new App();
         app.loadDictionary();
         try {
@@ -44,7 +48,9 @@ public class App {
                     .map(w -> {
                         List<String> word = app.getWord(w);
                         String[] array = word.toArray(new String[word.size()]);
-                        System.out.println(Arrays.toString(array));
+                        if (verbose) {
+                            System.out.println(Arrays.toString(array));
+                        }
                         CMU2KatakanaLexer lexer = new CMU2KatakanaLexer(
                                 new ANTLRInputStream(Stream.of(array).collect(Collectors.joining(" "))));
                         CommonTokenStream token = new CommonTokenStream(lexer);
